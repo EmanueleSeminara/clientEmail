@@ -1,13 +1,7 @@
 package org.emanueleseminara.clientEmail;
 
-import javax.mail.BodyPart;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.internet.ContentType;
-import javax.mail.internet.MimeMultipart;
+import javax.mail.*;
+import javax.mail.internet.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +26,11 @@ public class Email {
         properties.put("mail.pop3.socketFactory", 995);
         properties.put("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "465");
+        properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.auth", "true");
+
         return properties;
 
     }
@@ -49,24 +48,13 @@ public class Email {
     }
 
     public Message[] loadEmail(String properties, String storeType, String username, String password) throws MessagingException, IOException {
-        Properties prop = searchProperties(properties);
-        Session emailSession = Session.getDefaultInstance(prop);
+        Properties props = searchProperties(properties);
+        Session emailSession = Session.getDefaultInstance(props);
         Store emailStore =  emailSession.getStore(storeType);
         emailStore.connect(username, password);
         Folder emailFolder = emailStore.getFolder("INBOX");
         emailFolder.open(Folder.READ_ONLY);
         return emailFolder.getMessages();
-/*
-        for (int i = 0; i < messages.length; i++) {
-            Message message = messages[i];
-            System.out.println("---------------------------------");
-            System.out.println("Email Number " + (i + 1));
-            System.out.println("Subject: " + message.getSubject());
-            System.out.println("From: " + message.getFrom()[0]);
-            //System.out.println("Text: " + message.getContent().getClass());
-            System.out.println("Text: " + getTextFromMessage(message));
-        }
-*/
 
     }
 
@@ -98,8 +86,7 @@ public class Email {
         return result.toString();
     }
 
-    private String getTextFromBodyPart (
-            BodyPart bodyPart) throws IOException, MessagingException {
+    private String getTextFromBodyPart (BodyPart bodyPart) throws IOException, MessagingException {
 
         String result = "";
         if (bodyPart.isMimeType("text/plain")) {
@@ -111,5 +98,36 @@ public class Email {
             result = getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
         }
         return result;
+    }
+
+    public void sendEmail(String properties, String from, String password, String to, String sub, String msg) throws MessagingException {
+        Properties props = searchProperties(properties);
+        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+
+            protected PasswordAuthentication getPasswordAuthentication() {
+
+                return new PasswordAuthentication(from, password);
+
+            }
+
+        });
+
+        MimeMessage message = new MimeMessage(session);
+        message.addRecipient(Message.RecipientType.TO,new InternetAddress(to));
+        message.setSubject(sub);
+        message.setText(msg);
+        Transport.send(message);
+    }
+
+    public void readEmail(Message[] messages) throws MessagingException, IOException {
+        for (int i = 0; i < messages.length; i++) {
+            Message message = messages[i];
+            System.out.println("---------------------------------");
+            System.out.println("Email Number " + (i + 1));
+            System.out.println("Subject: " + message.getSubject());
+            System.out.println("From: " + message.getFrom()[0]);
+            //System.out.println("Text: " + message.getContent().getClass());
+            System.out.println("Text: " + getTextFromMessage(message));
+        }
     }
 }

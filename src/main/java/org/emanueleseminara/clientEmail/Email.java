@@ -48,15 +48,15 @@ public class Email {
         service.put(name, properties);
     }
 
-    public void receiveEmail(String properties, String storeType, String username, String password) throws MessagingException, IOException {
+    public Message[] loadEmail(String properties, String storeType, String username, String password) throws MessagingException, IOException {
         Properties prop = searchProperties(properties);
         Session emailSession = Session.getDefaultInstance(prop);
         Store emailStore =  emailSession.getStore(storeType);
         emailStore.connect(username, password);
         Folder emailFolder = emailStore.getFolder("INBOX");
         emailFolder.open(Folder.READ_ONLY);
-        Message[] messages = emailFolder.getMessages();
-
+        return emailFolder.getMessages();
+/*
         for (int i = 0; i < messages.length; i++) {
             Message message = messages[i];
             System.out.println("---------------------------------");
@@ -66,9 +66,7 @@ public class Email {
             //System.out.println("Text: " + message.getContent().getClass());
             System.out.println("Text: " + getTextFromMessage(message));
         }
-
-        emailFolder.close(false);
-        emailStore.close();
+*/
 
     }
 

@@ -7,33 +7,20 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        formLogin login = new formLogin();
+        //formClient client = new formClient();
+
+        /*Scanner sc = new Scanner(System.in);
         String username, password;
         Email email = new Email();
-        Message[] messages = null;
+        Message[] messages = formLogin.getMessages();
 
         System.out.println("############### CLIENT EMAIL ###############\n" +
                 "\n**At the moment it only works with GMAIL**\n" +
                 "Type Help for the command list" +
                 "\n################## LOGIN ###################");
 
-        do {
-            System.out.print("Email: ");
-            username = sc.nextLine();
-            System.out.print("Password: ");
-            password = sc.nextLine();
 
-
-            try {
-                messages = email.loadEmail("Gmail", "pop3", username, password);
-                System.out.println("\nLOGIN SUCCESSFUL!\n");
-            } catch (MessagingException e) {
-                System.out.println("\n***** WRONG EMAIL OR PASSWORD *****\n");
-                //e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }while(messages == null);
 
 
 
@@ -59,7 +46,7 @@ public class Main {
                     }
 
                     break;
-                case("send"):
+                /*case("send"):
                     System.out.print("To: ");
                     String to = sc.nextLine();
                     System.out.print("Object: ");
@@ -81,6 +68,6 @@ public class Main {
                 default:
                     System.out.println("***** COMMAND NOT FOUND *****");
             }
-        }
+        }*/
     }
 }
